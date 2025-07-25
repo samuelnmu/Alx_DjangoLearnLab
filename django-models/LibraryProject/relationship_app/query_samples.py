@@ -12,7 +12,7 @@ def run_queries():
     except Author.DoesNotExist:
         print(f"No author found with name: {author_name}")
 
-    # Query 2: All books in a specific library
+    # Query 2: All books in a library
     library_name = "Central Library"
     try:
         library = Library.objects.get(name=library_name)
@@ -22,10 +22,11 @@ def run_queries():
             print(f" - {book.title}")
     except Library.DoesNotExist:
         print(f"No library found with name: {library_name}")
+        return
 
-    # Query 3: Librarian of a library
+    # Query 3: Librarian of a library using direct library reference
     try:
-        librarian = Librarian.objects.get(library__name=library_name)
-        print(f"\nLibrarian of {library_name}: {librarian.name}")
+        librarian = Librarian.objects.get(library=library)
+        print(f"\nLibrarian of {library.name}: {librarian.name}")
     except Librarian.DoesNotExist:
         print(f"No librarian found for library: {library_name}")
