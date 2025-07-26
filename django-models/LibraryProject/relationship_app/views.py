@@ -1,14 +1,10 @@
 # relationship_app/views.py
-
-from django.shortcuts import render, get_object_or_404
-from .models import Book
-from .models import Library  # <-- Exact match for "from .models import Library"
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Book, Library
 from django.views.generic.detail import DetailView
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from django.shortcuts import redirect
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
+from .forms import CustomUserCreationForm  # Import the custom form
 
 # Function-based view
 def list_books(request):
@@ -23,15 +19,14 @@ class LibraryDetailView(DetailView):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)  # Use custom form instead of UserCreationForm
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Log the user in after successful registration
-            return redirect('list_books')  # Redirect to book list or home page
+            login(request, user)
+            return redirect('list_books')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
-
 
 def check_role(role):
     def inner(user):
