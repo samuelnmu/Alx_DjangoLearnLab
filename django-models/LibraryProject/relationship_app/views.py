@@ -9,6 +9,7 @@ from django.urls import reverse
 from .models import Book, Library
 from django.views.generic.detail import DetailView  # ✅ Required literal
 from .forms import BookForm  # Make sure to create this form
+from django.contrib.auth.decorators import permission_required
 
 # ✅ Function-based view: List all books
 def list_books(request):
