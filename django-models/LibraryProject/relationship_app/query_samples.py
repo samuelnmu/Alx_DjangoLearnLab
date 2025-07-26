@@ -1,77 +1,17 @@
 # relationship_app/query_samples.py
+
 from relationship_app.models import Author, Book, Library, Librarian
 
+# Query all books by a specific author
 def get_books_by_author(author_name):
-    """Query all books by a specific author using objects.filter()"""
-    try:
-        author = Author.objects.get(name=author_name)
-        books = Book.objects.filter(author=author)
-        print(f"Books by {author_name}:")
-        for book in books:
-            print(f"- {book.title}")
-        return books
-    except Author.DoesNotExist:
-        print(f"Author '{author_name}' not found.")
-        return []
+    return Book.objects.filter(author__name=author_name)
 
+
+# List all books in a specific library
 def get_books_in_library(library_name):
-    """List all books in a library"""
-    try:
-        library = Library.objects.get(name=library_name)
-        books = library.books.all()
-        print(f"Books in {library_name} library:")
-        for book in books:
-            print(f"- {book.title} (by {book.author.name})")
-        return books
-    except Library.DoesNotExist:
-        print(f"Library '{library_name}' not found.")
-        return []
+    return Library.objects.get(name=library_name).books.all()
 
+
+# Retrieve the librarian for a specific library
 def get_librarian_for_library(library_name):
-    """Retrieve the librarian for a library using related_name"""
-    try:
-        library = Library.objects.get(name=library_name)
-        try:
-            librarian = library.librarian  # Using the related_name 'librarian'
-            print(f"Librarian for {library_name} (using related_name): {librarian.name}")
-            return librarian
-        except Librarian.DoesNotExist:
-            print(f"No librarian assigned to {library_name}")
-            return None
-    except Library.DoesNotExist:
-        print(f"Library '{library_name}' not found.")
-        return None
-
-def get_librarian_for_library_direct(library_name):
-    """Retrieve the librarian for a library using Librarian.objects.get()"""
-    try:
-        library = Library.objects.get(name=library_name)
-        try:
-            # Using Librarian.objects.get(library=library) as requested
-            librarian = Librarian.objects.get(library=library)
-            print(f"Librarian for {library_name} (using direct query): {librarian.name}")
-            return librarian
-        except Librarian.DoesNotExist:
-            print(f"No librarian assigned to {library_name}")
-            return None
-    except Library.DoesNotExist:
-        print(f"Library '{library_name}' not found.")
-        return None
-
-# Example usage 
-if __name__ == "__main__":
-    # Create sample data first
-    author1 = Author.objects.create(name="J.K. Rowling")
-    book1 = Book.objects.create(title="Harry Potter 1", author=author1)
-    book2 = Book.objects.create(title="Harry Potter 2", author=author1)
-    
-    library1 = Library.objects.create(name="Central Library")
-    library1.books.add(book1, book2)
-    
-    librarian1 = Librarian.objects.create(name="Ms. Smith", library=library1)
-    
-    # Test queries
-    get_books_by_author("J.K. Rowling")
-    get_books_in_library("Central Library")
-    get_librarian_for_library("Central Library")  # Using related_name
-    get_librarian_for_library_direct("Central Library")  # Using direct query
+    return Library.objects.get(name=library_name).librarian
