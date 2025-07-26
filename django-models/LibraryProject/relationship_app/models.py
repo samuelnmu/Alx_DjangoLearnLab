@@ -21,6 +21,13 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        permissions = [
+            ('can_add_book', 'Can add a book'),
+            ('can_change_book', 'Can change a book'),
+            ('can_delete_book', 'Can delete a book'),
+        ]
+
 
 class Library(models.Model):
     name = models.CharField(max_length=100)
@@ -54,6 +61,7 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
+
 
 # Automatically create UserProfile for each new user
 @receiver(post_save, sender=User)
