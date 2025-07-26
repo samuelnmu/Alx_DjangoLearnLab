@@ -2,11 +2,25 @@
 from relationship_app.models import Author, Book, Library, Librarian
 
 def get_books_by_author(author_name):
-    """Query all books by a specific author"""
+    """Query all books by a specific author using objects.filter()"""
+    try:
+        author = Author.objects.get(name=author_name)
+        # Using objects.filter(author=author) as requested
+        books = Book.objects.filter(author=author)
+        print(f"Books by {author_name} (using filter):")
+        for book in books:
+            print(f"- {book.title}")
+        return books
+    except Author.DoesNotExist:
+        print(f"Author '{author_name}' not found.")
+        return []
+
+def get_books_by_author_related_name(author_name):
+    """Alternative: Query all books by a specific author using related_name"""
     try:
         author = Author.objects.get(name=author_name)
         books = author.books.all()  # Using the related_name 'books'
-        print(f"Books by {author_name}:")
+        print(f"Books by {author_name} (using related_name):")
         for book in books:
             print(f"- {book.title}")
         return books
@@ -42,7 +56,7 @@ def get_librarian_for_library(library_name):
         print(f"Library '{library_name}' not found.")
         return None
 
-# Example usage (you can uncomment to test)
+# Example usage 
 if __name__ == "__main__":
     # Create sample data first
     author1 = Author.objects.create(name="J.K. Rowling")
@@ -55,6 +69,7 @@ if __name__ == "__main__":
     librarian1 = Librarian.objects.create(name="Ms. Smith", library=library1)
     
     # Test queries
-    get_books_by_author("J.K. Rowling")
+    get_books_by_author("J.K. Rowling")  # Using objects.filter()
+    get_books_by_author_related_name("J.K. Rowling")  # Using related_name
     get_books_in_library("Central Library")
     get_librarian_for_library("Central Library")
