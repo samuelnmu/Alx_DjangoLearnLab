@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.detail import DetailView
-from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required
 from .models import Book, Library
 from .forms import BookForm  # Ensure you have a form for Book
+
 
 # ===============================
 # Function-based view: List all books
@@ -45,7 +47,6 @@ def add_book(request):
         form = BookForm()
     return render(request, 'relationship_app/book_form.html', {'form': form})
 
-
 @permission_required('relationship_app.can_change_book')
 def edit_book(request, pk):
     """Allows editing an existing book (requires can_change_book permission)."""
@@ -59,7 +60,6 @@ def edit_book(request, pk):
         form = BookForm(instance=book)
     return render(request, 'relationship_app/book_form.html', {'form': form})
 
-
 @permission_required('relationship_app.can_delete_book')
 def delete_book(request, pk):
     """Allows deleting a book (requires can_delete_book permission)."""
@@ -71,54 +71,38 @@ def delete_book(request, pk):
 
 
 # ===============================
-# Role check helper functions (Updated for CustomUser model)
+# Role check helper functions
 # ===============================
 def is_admin(user):
-    """Returns True if the logged-in user has role 'Admin'."""
-    return getattr(user, 'role', None) == 'Admin'
-
+    """
+    Returns True if the logged-in user has a related UserProfile
+    and their role is 'Admin'.
+    """
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
 
 def is_librarian(user):
     """Check if user is a Librarian."""
-    return getattr(user, 'role', None) == 'Librarian'
-
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
 
 def is_member(user):
     """Check if user is a Member."""
-    return getattr(user, 'role', None) == 'Member'
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
 
 
 # ===============================
 # Role-restricted views
 # ===============================
-@user_passes_test(is_admin)
+@user_passes_test(is_admin)  # Only allow Admin users
 def admin_view(request):
     """View accessible only to Admin role."""
     return render(request, 'relationship_app/admin_view.html')
 
-
-@user_passes_test(is_librarian)
+@user_passes_test(is_librarian)  # Only allow Librarians
 def librarian_view(request):
     """View accessible only to Librarian role."""
     return render(request, 'relationship_app/librarian_view.html')
 
-
-@user_passes_test(is_member)
+@user_passes_test(is_member)  # Only allow Members
 def member_view(request):
     """View accessible only to Member role."""
     return render(request, 'relationship_app/member_view.html')
-
-
-# 1) Removed hasattr(user, 'userprofile') checks:
-#    - Since we no longer have a UserProfile model, we directly check user.role.
-#    - This is cleaner and avoids AttributeError if userprofile doesn't exist.
-
-# 2) Used getattr(user, 'role', None):
-#    - This safely retrieves the 'role' attribute from the CustomUser model.
-#    - If 'role' does not exist for some reason, it returns None instead of raising an error.
-
-# 3) Left permission_required decorators unchanged:
-#    - They work the same because they are tied to model-level permissions, not the user model structure.
-
-# 4) Kept all CRUD book views unchanged:
-#    - They don't depend on UserProfile or CustomUser structure, only on permissions.

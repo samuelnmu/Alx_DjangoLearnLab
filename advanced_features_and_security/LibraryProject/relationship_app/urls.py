@@ -10,9 +10,7 @@ from .views import (
     delete_book
 )
 
-# ===============================
 # URL patterns for relationship_app
-# ===============================
 urlpatterns = [
     # ===============================
     # Function-based view: List all books in the database
@@ -26,22 +24,15 @@ urlpatterns = [
 
     # ===============================
     # Permission-protected CRUD views for Book
-    # Permissions are assigned at the model level in Book.Meta.permissions.
-    # Django checks these permissions against the current logged-in user's CustomUser object.
     # ===============================
-    path('add_book/', add_book, name='add-book'),               # Requires 'relationship_app.can_add_book'
-    path('edit_book/<int:pk>/', edit_book, name='edit-book'),   # Requires 'relationship_app.can_change_book'
-    path('delete_book/<int:pk>/', delete_book, name='delete-book'), # Requires 'relationship_app.can_delete_book'
+    path('add_book/', add_book, name='add-book'),         # Requires can_add_book
+    path('edit_book/<int:pk>/', edit_book, name='edit-book'),  # Requires can_change_book
+    path('delete_book/<int:pk>/', delete_book, name='delete-book'), # Requires can_delete_book
 
     # ===============================
     # Role-based access views
-    # These now use role checks directly from CustomUser.role:
-    #   - Admin role → 'Admin'
-    #   - Librarian role → 'Librarian'
-    #   - Member role → 'Member'
-    # Previously, role was stored in UserProfile; now it's a field in CustomUser.
     # ===============================
-    path('admin-only/', admin_view, name='admin-view'),           # Accessible only if user.role == 'Admin'
-    path('librarian-only/', librarian_view, name='librarian-view'), # Accessible only if user.role == 'Librarian'
-    path('member-only/', member_view, name='member-view'),        # Accessible only if user.role == 'Member'
+    path('admin-only/', admin_view, name='admin-view'),         # Accessible only to Admin role
+    path('librarian-only/', librarian_view, name='librarian-view'), # Accessible only to Librarian role
+    path('member-only/', member_view, name='member-view'),      # Accessible only to Member role
 ]
