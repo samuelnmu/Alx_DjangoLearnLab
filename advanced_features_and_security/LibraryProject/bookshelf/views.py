@@ -3,7 +3,8 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
 from .models import Book
-from .forms import BookForm, ExampleForm
+from .forms import BookForm
+from .forms import ExampleForm
 
 """
 PERMISSIONS & GROUPS SETUP GUIDE:
