@@ -12,6 +12,26 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+
+
+"""
+SECURITY MEASURES IMPLEMENTED:
+
+1. DEBUG = False in production.
+2. ALLOWED_HOSTS restricts requests to known domains.
+3. Browser protections enabled:
+   - SECURE_BROWSER_XSS_FILTER
+   - SECURE_CONTENT_TYPE_NOSNIFF
+   - X_FRAME_OPTIONS
+4. Cookies are HTTPS-only:
+   - CSRF_COOKIE_SECURE
+   - SESSION_COOKIE_SECURE
+5. HSTS enabled for HTTPS enforcement.
+6. CSP headers restrict external resource loading to trusted sources.
+7. CSRF protection enabled in all forms via {% csrf_token %}.
+8. Django ORM used to prevent SQL injection.
+"""
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -126,3 +146,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
+MIDDLEWARE.insert(0, 'LibraryProject.middleware.CSPMiddleware')

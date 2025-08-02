@@ -3,7 +3,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.decorators import permission_required
 from .models import Book
 from .forms import BookForm
-
+from django.db.models import Q
 
 """
 PERMISSIONS & GROUPS SETUP GUIDE:
@@ -28,8 +28,21 @@ Usage:
 # View Books — requires can_view
 @permission_required('bookshelf.can_view', raise_exception=True)
 def book_list(request):
-    books = Book.objects.all()
-    return render(request, 'bookshelf/list_books.html', {'books': books})
+    """
+    Secure book listing with optional search.
+    Uses Django ORM filtering to avoid SQL injection.
+    """
+    query = request.GET.get('q', '')
+    if query:
+        # Using ORM filters to prevent SQL injection
+        books = Book.objects.filter(
+            Q(title__icontains=query) |
+            Q(author__icontains=query)
+        )
+    else:
+        books = Book.objects.all()
+
+    return render(request, 'bookshelf/book_list.html', {'books': books, 'query': query})
 
 # Add Book — requires can_create
 @permission_required('bookshelf.can_create', raise_exception=True)
