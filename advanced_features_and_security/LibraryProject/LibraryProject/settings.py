@@ -66,6 +66,19 @@ SECURE_BROWSER_XSS_FILTER = True
 """
 
 
+
+"""
+# ===============================
+# Proxy SSL Header
+# ===============================
+# This setting tells Django to trust the X-Forwarded-Proto header sent by a proxy
+# (e.g., Nginx, Apache) to determine whether the original request was HTTPS.
+# This is required when SECURE_SSL_REDIRECT is enabled behind a reverse proxy.
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+"""
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
