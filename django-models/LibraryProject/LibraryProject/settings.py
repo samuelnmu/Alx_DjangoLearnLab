@@ -56,7 +56,7 @@ ROOT_URLCONF = 'LibraryProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Directory for custom templates
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -68,11 +68,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# Redirect URLs after login/logout/registration
-LOGIN_REDIRECT_URL = 'list_books'       # where to go after successful login
-LOGOUT_REDIRECT_URL = 'login'           # where to go after logout
-LOGIN_URL = 'login'                     # where to redirect when @login_required is used
 
 WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
