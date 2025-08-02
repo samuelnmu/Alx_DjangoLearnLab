@@ -25,9 +25,9 @@ urlpatterns = [
     # ===============================
     # Permission-protected CRUD views for Book
     # ===============================
-    path('books/add/', add_book, name='add-book'),          # Requires can_add_book
-    path('books/<int:pk>/edit/', edit_book, name='edit-book'),   # Requires can_change_book
-    path('books/<int:pk>/delete/', delete_book, name='delete-book'), # Requires can_delete_book
+    path('add_book/', add_book, name='add-book'),         # Requires can_add_book
+    path('edit_book/<int:pk>/', edit_book, name='edit-book'),  # Requires can_change_book
+    path('delete_book/<int:pk>/', delete_book, name='delete-book'), # Requires can_delete_book
 
     # ===============================
     # Role-based access views
