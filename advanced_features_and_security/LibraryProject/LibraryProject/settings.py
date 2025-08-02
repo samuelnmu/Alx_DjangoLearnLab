@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -33,7 +33,6 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'bookshelf',
     'relationship_app',
-    'accounts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,7 +56,7 @@ ROOT_URLCONF = 'LibraryProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Directory for custom templates
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,11 +68,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# Redirect URLs after login/logout/registration
-LOGIN_REDIRECT_URL = 'list_books'       # where to go after successful login
-LOGOUT_REDIRECT_URL = 'login'           # where to go after logout
-LOGIN_URL = 'login'                     # where to redirect when @login_required is used
 
 WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
@@ -130,10 +124,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
 
-# For media (profile photos)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-
+AUTH_USER_MODEL = 'relationship_app.CustomUser'

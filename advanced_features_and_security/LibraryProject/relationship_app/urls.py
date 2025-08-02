@@ -1,26 +1,47 @@
-# relationship_app/urls.py
-
 from django.urls import path
-from . import views  # ✅ Needed for views.register to match the checker
-from django.contrib.auth.views import LoginView, LogoutView
+from .views import (
+    list_books,
+    LibraryDetailView,
+    admin_view,
+    librarian_view,
+    member_view,
+    add_book,
+    edit_book,
+    delete_book
+)
 
+# ===============================
+# URL patterns for relationship_app
+# ===============================
 urlpatterns = [
-    # 📚 Book & Library views
-    path('books/', views.list_books, name='list_books'),
-    path('library/<int:pk>/', views.LibraryDetailView.as_view(), name='library_detail'),
+    # ===============================
+    # Function-based view: List all books in the database
+    # ===============================
+    path('books/', list_books, name='list-books'),
 
-    # 🔐 Authentication views
-    path('register/', views.register, name='register'),  # ✅ views.register
-    path('login/', LoginView.as_view(template_name='relationship_app/login.html'), name='login'),  # ✅ template_name=...
-    path('logout/', LogoutView.as_view(template_name='relationship_app/logout.html'), name='logout'),  # ✅ template_name=...
+    # ===============================
+    # Class-based view: Display details for a specific library (identified by primary key <pk>)
+    # ===============================
+    path('library/<int:pk>/', LibraryDetailView.as_view(), name='library-detail'),
 
-    # 👥 Role-based dashboard views
-    path('admin-view/', views.admin_view, name='admin_view'),
-    path('librarian-view/', views.librarian_view, name='librarian_view'),
-    path('member-view/', views.member_view, name='member_view'),
+    # ===============================
+    # Permission-protected CRUD views for Book
+    # Permissions are assigned at the model level in Book.Meta.permissions.
+    # Django checks these permissions against the current logged-in user's CustomUser object.
+    # ===============================
+    path('add_book/', add_book, name='add-book'),               # Requires 'relationship_app.can_add_book'
+    path('edit_book/<int:pk>/', edit_book, name='edit-book'),   # Requires 'relationship_app.can_change_book'
+    path('delete_book/<int:pk>/', delete_book, name='delete-book'), # Requires 'relationship_app.can_delete_book'
 
-    # ✏️ Book CRUD views (permission-based)
-    path('books/add/', views.add_book, name='add_book'),                  # ✅ matches "add_book/"
-    path('books/<int:pk>/edit/', views.edit_book, name='edit_book'),      # ✅ matches "edit_book/"
-    path('books/<int:pk>/delete/', views.delete_book, name='delete_book'),
+    # ===============================
+    # Role-based access views
+    # These now use role checks directly from CustomUser.role:
+    #   - Admin role → 'Admin'
+    #   - Librarian role → 'Librarian'
+    #   - Member role → 'Member'
+    # Previously, role was stored in UserProfile; now it's a field in CustomUser.
+    # ===============================
+    path('admin-only/', admin_view, name='admin-view'),           # Accessible only if user.role == 'Admin'
+    path('librarian-only/', librarian_view, name='librarian-view'), # Accessible only if user.role == 'Librarian'
+    path('member-only/', member_view, name='member-view'),        # Accessible only if user.role == 'Member'
 ]
