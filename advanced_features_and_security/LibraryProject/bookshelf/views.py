@@ -3,7 +3,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
 from .models import Book
-from .forms import BookForm, ExampleForm  # ✅ Fixed typo here
+from .forms import BookForm, ExampleForm
 
 """
 PERMISSIONS & GROUPS SETUP GUIDE:
