@@ -32,6 +32,40 @@ SECURITY MEASURES IMPLEMENTED:
 8. Django ORM used to prevent SQL injection.
 """
 
+"""
+# ===============================
+# HTTPS & SECURE HEADERS SETTINGS
+# ===============================
+
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True
+# WHY: Forces every request to be redirected to HTTPS, ensuring encrypted communication.
+
+# HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+# WHY: Tells browsers to only connect to the site using HTTPS for the next year.
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# WHY: Extends HSTS enforcement to all subdomains.
+SECURE_HSTS_PRELOAD = True
+# WHY: Allows the domain to be included in browsers’ HSTS preload lists for even stricter enforcement.
+
+# Secure cookies
+SESSION_COOKIE_SECURE = True
+# WHY: Ensures session cookies are only sent over HTTPS.
+CSRF_COOKIE_SECURE = True
+# WHY: Ensures CSRF cookies are only sent over HTTPS.
+
+# Secure headers
+X_FRAME_OPTIONS = 'DENY'
+# WHY: Prevents clickjacking attacks by disallowing the site to be embedded in an iframe.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+# WHY: Prevents browsers from guessing file MIME types, protecting from certain attacks.
+SECURE_BROWSER_XSS_FILTER = True
+# WHY: Enables browser’s XSS filter to block simple cross-site scripting attacks.
+
+"""
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
