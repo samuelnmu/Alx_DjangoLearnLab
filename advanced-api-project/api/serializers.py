@@ -17,6 +17,8 @@ class BookSerializer(serializers.ModelSerializer):
     
 # Serializer for Author
 class AuthorSerializer(serializers.ModelSerializer):
+    # Pull related books from the `related_name='books'` in the model
+    books = BookSerializer(many=True, read_only=True)
     class Meta:
         model=Author
         fields=('name',)
