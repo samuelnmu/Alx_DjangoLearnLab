@@ -3,14 +3,15 @@ from .models import Book
 from .serializers import BookSerializer
 from rest_framework import permissions
 from rest_framework import serializers
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+
 
 
 #List all books
 class BookListView(ListAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
-    permission_classes=[AllowAny]
+    permission_classes=[IsAuthenticatedOrReadOnly]
 
 #Create a new book  
 class BookCreateView(CreateAPIView):
@@ -65,7 +66,7 @@ class BookUpdateView(UpdateAPIView):
 class BookDetailView(RetrieveAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
-    permission_classes=[AllowAny]
+    permission_classes=[IsAuthenticatedOrReadOnly]
     
 #Delete a book
 class BookDeleteView(DestroyAPIView):
