@@ -13,10 +13,9 @@ User = get_user_model()
 class BookAPITests(APITestCase):
     """
     Test suite for the Book API endpoints.
-
     Uses Django REST Framework's APITestCase, which sets up:
-    - An isolated test database (rolled back after tests)
-    - A test client (`self.client`) that simulates HTTP requests
+    - An isolated test database
+    - A test client (`self.client`) for simulating HTTP requests
     """
 
     @classmethod
@@ -57,10 +56,14 @@ class BookAPITests(APITestCase):
         """Runs before each test."""
         self.client = APIClient()
 
+    def get_json(self, resp):
+        """Helper to load JSON from response without using `response.data`."""
+        return json.loads(resp.content)
+
     # ---------- LIST / RETRIEVE ----------
     def test_list_books_public_access(self):
         resp = self.client.get(self.url_list)
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertGreaterEqual(len(data), 4)
         titles = [b["title"] for b in data]
@@ -69,7 +72,7 @@ class BookAPITests(APITestCase):
     def test_retrieve_book_public_access(self):
         url = reverse("book-detail", kwargs={"pk": self.b3.pk})
         resp = self.client.get(url)
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(data["title"], self.b3.title)
         self.assertEqual(data["publication_year"], self.b3.publication_year)
@@ -84,7 +87,7 @@ class BookAPITests(APITestCase):
         self.client.force_authenticate(user=self.user)
         payload = {"title": "Clean Code in Django", "publication_year": 2021, "author": self.a_rowling.pk}
         resp = self.client.post(self.url_create, payload, format="json")
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         self.assertEqual(data["title"], payload["title"])
         self.assertEqual(data["publication_year"], payload["publication_year"])
@@ -106,7 +109,7 @@ class BookAPITests(APITestCase):
         self.client.force_authenticate(user=self.user)
         url = reverse("book-update", kwargs={"pk": self.b1.pk})
         resp = self.client.put(url, {"title": "HP1 (Edited)", "publication_year": 1997, "author": self.a_rowling.pk}, format="json")
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(data["title"], "HP1 (Edited)")
         self.assertIn("message", data)
@@ -133,21 +136,21 @@ class BookAPITests(APITestCase):
     # ---------- FILTERING ----------
     def test_filter_by_title_exact(self):
         resp = self.client.get(self.url_list, {"title": "The Hobbit"})
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]["title"], "The Hobbit")
 
     def test_filter_by_author_fk_id(self):
         resp = self.client.get(self.url_list, {"author": self.a_rowling.pk})
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         returned_authors = {item["author"] for item in data}
         self.assertTrue(all(a_id == self.a_rowling.pk for a_id in returned_authors))
 
     def test_filter_by_publication_year(self):
         resp = self.client.get(self.url_list, {"publication_year": 1937})
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]["title"], "The Hobbit")
@@ -155,7 +158,7 @@ class BookAPITests(APITestCase):
     # ---------- SEARCH ----------
     def test_search_by_title_icontains(self):
         resp = self.client.get(self.url_list, {"search": "harry"})
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         titles = [b["title"].lower() for b in data]
         self.assertTrue(any("harry potter" in t for t in titles))
@@ -163,14 +166,14 @@ class BookAPITests(APITestCase):
     # ---------- ORDERING ----------
     def test_order_by_title_asc(self):
         resp = self.client.get(self.url_list, {"ordering": "title"})
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         titles = [b["title"] for b in data]
         self.assertEqual(titles, sorted(titles))
 
     def test_order_by_publication_year_desc(self):
         resp = self.client.get(self.url_list, {"ordering": "-publication_year"})
-        data = json.loads(resp.content)
+        data = self.get_json(resp)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         years = [b["publication_year"] for b in data]
         self.assertEqual(years, sorted(years, reverse=True))
