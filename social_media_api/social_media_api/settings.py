@@ -150,3 +150,19 @@ REST_FRAMEWORK.update({
         "rest_framework.filters.OrderingFilter",
     ],
 })
+
+
+
+# ---------------- Security Settings ---------------- #
+
+# Prevents browser from guessing content types
+SECURE_CONTENT_TYPE_NOSNIFF = True  
+
+# Enables the browser XSS filter
+SECURE_BROWSER_XSS_FILTER = True  
+
+# Protects against clickjacking attacks
+X_FRAME_OPTIONS = 'DENY'  
+
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True  
